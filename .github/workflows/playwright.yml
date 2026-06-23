@@ -9,13 +9,11 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    # Fix: Rebuild the container explicitly to ensure code files are baked into the image layer rather than relying on volume mounts
     - name: Compile Docker Sandbox Image
-      run: docker-compose build document-tests
+      run: docker compose build document-tests
 
-    # Fix: Use 'run' instead of 'up' to guarantee the container terminates and sends its return code back to GitHub Actions instantly
     - name: Run Playwright Tests inside Standardized Docker Container
-      run: docker-compose run document-tests npx playwright test
+      run: docker compose run document-tests npx playwright test
 
     - name: Archive Document Test Reports
       if: always()
