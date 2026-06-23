@@ -1,0 +1,19 @@
+{
+  "name": "doc-output-visual-qa",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A Playwright-based Document Output Visual Regression Testing Framework for enterprise and business software applications.",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:docker": "docker-compose up --build --exit-code-from document-tests",
+    "snapshot:create": "docker-compose run --entrypoint \"npx playwright test --update-snapshots\" document-tests",
+    "test:ui": "playwright test --ui-host 0.0.0.0 --ui-port 8080"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.0",
+    "@types/node": "^25.9.3",
+    "pdf-img-convert": "^1.2.1",
+    "typescript": "^6.0.3"
+  }
+}

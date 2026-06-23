@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Playwright Test Outputs & Artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+artifacts/
+
+# Local Environment & Secrets
+.env
+.env.*
+.DS_Store
+Thumbs.db

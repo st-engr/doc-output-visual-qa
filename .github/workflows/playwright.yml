@@ -1,0 +1,26 @@
+name: Document Automation Test Suite
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    # Fix: Rebuild the container explicitly to ensure code files are baked into the image layer rather than relying on volume mounts
+    - name: Compile Docker Sandbox Image
+      run: docker-compose build document-tests
+
+    # Fix: Use 'run' instead of 'up' to guarantee the container terminates and sends its return code back to GitHub Actions instantly
+    - name: Run Playwright Tests inside Standardized Docker Container
+      run: docker-compose run document-tests npx playwright test
+
+    - name: Archive Document Test Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: document-test-report
+        path: playwright-report/
+        retention-days: 14

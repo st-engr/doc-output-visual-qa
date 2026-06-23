@@ -1,0 +1,11 @@
+services:
+  document-tests:
+    build: .
+    image: playwright-business-output:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - CI=true
