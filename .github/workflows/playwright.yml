@@ -9,9 +9,27 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    - name: Compile Docker Sandbox Image
-      run: docker compose build document-tests
+    # 1. Initialize Docker Buildx (Required to unlock advanced cloud caching engines)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
+    # 2. Compile with Cache Injection (Skips heavy tasks if package.json hasn't updated)
+    - name: Compile Docker Sandbox Image
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: ./Dockerfile
+        tags: doc-output-visual-qa-document-tests:latest
+        outputs: type=docker,dest=/tmp/image.tar
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    # 3. Stream the cached image straight back into the local Docker engine
+    - name: Load Cached Docker Image
+      run: |
+        docker load --input /tmp/image.tar
+
+    # 4. Execute tests inside the pre-cached container space
     - name: Run Playwright Tests inside Standardized Docker Container
       run: docker compose run document-tests npx playwright test
 
