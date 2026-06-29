@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
-// @ts-ignore
-import pdfImgConvert from 'pdf-img-convert';
 import { NetworkHelper } from './support/helpers/network-helper'; // <-- Add import
+import { PdfHandler } from './support/helpers/pdf-handler';
 import { internationalTestCases } from './document-datasets';
 
 test.describe('Enterprise Business Output Document Automation Pipeline - Matrix Execution', () => {
@@ -92,28 +91,15 @@ test.describe('Enterprise Business Output Document Automation Pipeline - Matrix 
             const download = await downloadPromise;
 
             // Stream downloaded file chunks cleanly straight into memory bytes
-            const pdfStream = await download.createReadStream();
-            const chunks: Buffer[] = [];
-            for await (const chunk of pdfStream) {
-                chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-            }
-            const pdfBuffer = Buffer.concat(chunks);
+            const pdfBuffer = await PdfHandler.processDownloadToBuffer(download);
             console.log(`Successfully intercepted download and buffered binary stream.`);
 
             // ------------------------------------------------------------------------
             // 3: CONVERT BUFFER NATIVELY TO PNG & VISUALLY VALIDATE
             // ------------------------------------------------------------------------
 
-            // Render page 1 of the PDF directly to a pure Uint8Array PNG image buffer
-            const outputImages = await pdfImgConvert.convert(pdfBuffer, {
-                width: 1200 // Lock high resolution scaling for text accuracy
-            });
-            const firstPageImage = outputImages[0];
-            if (!firstPageImage) {
-                throw new Error('PDF conversion engine failed to extract the first document page.');
-            }
-
-            const firstPageImageBuffer = Buffer.from(firstPageImage);
+            // Render page 1 of the PDF directly to a pure PNG image buffer
+            const firstPageImageBuffer = await PdfHandler.convertPdfToPngBuffer(pdfBuffer);
 
             // Attach layout image into the Playwright Test report for viewing
             await test.info().attach(`Rendered PDF Document - ${dataBlock.invoiceNumber}`, {
