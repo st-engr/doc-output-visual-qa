@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 // @ts-ignore
 import pdfImgConvert from 'pdf-img-convert';
+import { NetworkHelper } from './support/helpers/network-helper'; // <-- Add import
 import { internationalTestCases } from './document-datasets';
 
 test.describe('Enterprise Business Output Document Automation Pipeline - Matrix Execution', () => {
@@ -9,23 +10,8 @@ test.describe('Enterprise Business Output Document Automation Pipeline - Matrix 
 
         test(`Data-Driven Lifecycle Validation: ${dataBlock.scenarioName}`, async ({ page }) => {
 
-            // OPTIMIZATION: Block ads, analytics, and heavy media to prevent timeouts
-            await page.route('**/*', (route) => {
-                const url = route.request().url();
-                const type = route.request().resourceType();
-
-                if (
-                    url.includes('google-analytics') ||
-                    url.includes('doubleclick') ||
-                    url.includes('ads') ||
-                    type === 'image' ||
-                    type === 'media'
-                ) {
-                    route.abort();
-                } else {
-                    route.continue();
-                }
-            });
+            // Network filtering abstracted helper layer
+            await NetworkHelper.optimizeThroughput(page);
 
             // ------------------------------------------------------------------------
             // 1: NAVIGATE TO THE WEB-BASED DOCUMENT GENERATOR AND FILL IN MOCK DATA
