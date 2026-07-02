@@ -8,6 +8,7 @@ export default defineConfig({
   updateSnapshots: 'none', // Prevents silent baseline modifications
   
   use: {
+    baseURL: process.env.BASE_URL || 'https://invoice-generator.com',
     headless: true,
     viewport: { width: 1280, height: 1440 },
     launchOptions: {
