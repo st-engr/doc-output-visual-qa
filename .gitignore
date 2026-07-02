@@ -12,5 +12,6 @@ artifacts/
 # Local Environment & Secrets
 .env
 .env.*
+!.env.example
 .DS_Store
 Thumbs.db
