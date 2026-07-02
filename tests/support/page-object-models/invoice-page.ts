@@ -23,7 +23,7 @@ export class InvoicePage {
     }
 
     async navigate(): Promise<void> {
-        await this.page.goto('https://invoice-generator.com');
+        await this.page.goto('/');
         console.log('Navigated to the invoice generator application.');
     }
 
